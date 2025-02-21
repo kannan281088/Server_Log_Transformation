@@ -35,7 +35,7 @@ mySQLcursor = mySQLconnection.cursor()
 # Function to create the SQLite table based on the MongoDB data structure
 def create_table(cursor):
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS user_history (
+        CREATE TABLE IF NOT EXISTS user_history1 (
             id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             MailID TEXT,
             MailDate DATETIME
@@ -48,7 +48,7 @@ create_table(mySQLcursor)
 
 
 #Reading the log file
-logFile = open("Server_Log_Transformation/Data/mbox.txt", "r")
+logFile = open("Projects/Server_Log_Transformation/Data/mbox.txt", "r")
 logData = logFile.read()
 logFile.close()
 
@@ -75,11 +75,11 @@ for mailData in selMailData:
   eMailID =  mailData.get("MailID", None)
   eMailDate = mailData.get("Date", None)
 
-  insert_query = "INSERT INTO user_history (MailID, MailDate) VALUES (%s, %s)"
+  insert_query = "INSERT INTO user_history1 (MailID, MailDate) VALUES (%s, %s)"
   values = (eMailID, eMailDate)
   mySQLcursor.execute(insert_query, values)
   mySQLconnection.commit()
-  print(f"Inserted document: {mailData}")
+  #print(f"Inserted document: {mailData}")
 
   print(mailData)
 
