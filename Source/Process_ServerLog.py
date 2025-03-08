@@ -3,13 +3,14 @@ import datetime
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import mysql.connector
+import credentials 
 
 lstMail = list()
 #mySQLconnection = mysql.connector
 
 #MongoDB setup
 def mongo_SetUp():  
-  myMongouri = "mongodb+srv://kanna28pgp:Pass1234@cluster0.l31kn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  myMongouri = credentials.Mongouri
   #Create a new client and connect to the server
   myMongoClient = MongoClient(myMongouri, server_api=ServerApi('1'))
   myMongodb = myMongoClient.test
@@ -18,24 +19,14 @@ def mongo_SetUp():
 
 #MySQL Setup
 def mySql_SetUp():  
-  mySQLconnection = mysql.connector.connect(
-    host = "localhost",
-    port = 3306,
-    user = "root",
-    password = "",
-    database = "test"  
-  )
+  mySQLconnection = mysql.connector.connect(**credentials.mySQLConString)
   #cursor = mySQLconnection.cursor()
   return mySQLconnection
-
-myMongoRecords = mongo_SetUp()
-mySQLconnection = mySql_SetUp() 
-mySQLcursor = mySQLconnection.cursor()
 
 # Function to create the SQLite table based on the MongoDB data structure
 def create_table(cursor):
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS user_history1 (
+        CREATE TABLE IF NOT EXISTS user_history2 (
             id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
             MailID TEXT,
             MailDate DATETIME
@@ -43,6 +34,10 @@ def create_table(cursor):
     ''')
     #mySQLconnection.commit()
 
+
+myMongoRecords = mongo_SetUp()
+mySQLconnection = mySql_SetUp() 
+mySQLcursor = mySQLconnection.cursor()
 
 create_table(mySQLcursor)
 
@@ -75,7 +70,7 @@ for mailData in selMailData:
   eMailID =  mailData.get("MailID", None)
   eMailDate = mailData.get("Date", None)
 
-  insert_query = "INSERT INTO user_history1 (MailID, MailDate) VALUES (%s, %s)"
+  insert_query = "INSERT INTO user_history2 (MailID, MailDate) VALUES (%s, %s)"
   values = (eMailID, eMailDate)
   mySQLcursor.execute(insert_query, values)
   mySQLconnection.commit()
